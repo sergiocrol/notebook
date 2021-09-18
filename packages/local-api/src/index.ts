@@ -11,6 +11,7 @@ export const serve = (
 ) => {
   const app = express();
 
+  app.use(createCellsRouter(filename, dir));
   // We are gonna use a proxy, so whenever we make a request (that is not a intended to save or get a cell)
   // to the local-api, we're gonna suppose that we are requesting to make a call to the local-client
   // make a bundling process and get the new html ans js files with the content.
@@ -34,8 +35,6 @@ export const serve = (
     const packagePath = require.resolve("local-client/build/index.html");
     app.use(express.static(path.dirname(packagePath)));
   }
-
-  app.use(createCellsRouter(filename, dir));
 
   // This will return a resolve response if everything is ok, or a reject if not
   // The promise will be handled by the command server in cli package

@@ -21,15 +21,37 @@ const initialState: CellsState = {
 
 const reducer = produce((state: CellsState = initialState, action: Action) => {
   switch (action.type) {
+    case ActionType.SAVE_CELLS_ERROR:
+      state.error = action.payload;
+
+      return state;
+    case ActionType.FETCH_CELLS:
+      state.loading = true;
+      state.error = null;
+
+      return state;
+    case ActionType.FETCH_CELLS_COMPLETED:
+      state.order = action.payload.map((cell) => cell.id);
+      state.data = action.payload.reduce((acc, cell) => {
+        acc[cell.id] = cell;
+        return acc;
+      }, {} as CellsState["data"]);
+
+      return state;
+    case ActionType.FETCH_CELLS_ERROR:
+      state.loading = false;
+      state.error = action.payload;
+
+      return state;
     case ActionType.UPDATE_CELL:
       const { id, content } = action.payload;
       // With immer we can wrap the reducer with the immer produce function, and we can
-      // work with the state as it wass a new fresh one (we do not have to create a new one,
+      // work with the state as it was a new fresh one (we do not have to create a new one,
       // and spread the old values and so on).
       state.data[id].content = content;
       // Also, we do not need to return the new state, because immer will do it for us.
       // But in this case, since we are using TS, we need to return the new state, otherwise
-      // TS will assume that the state can be undefined if we write just a "return";∫
+      // TS will assume that the state can be undefined if we write just a "return";
       return state;
     case ActionType.DELETE_CELL:
       const cellId = action.payload;
